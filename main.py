@@ -1,7 +1,11 @@
 import requests
 import pandas as pd
+import json
 
-api_key = 'a6255d0f011142e8b8c104239252908'
+with open('config.json', 'r') as f:
+    config = json.load(f)
+
+api_key = config['api_key']
 pd.set_option("display.max_columns", None)
 
 def tomorrow_forecast(cities):
@@ -23,6 +27,7 @@ def tomorrow_forecast(cities):
             for hour in range(0, 24):
                 if data['hour'][hour]['wind_kph'] == maxwind_kph:
                     wind_dir = data['hour'][hour]['wind_dir']
+                    break
                 else:
                     continue
 
