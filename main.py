@@ -17,7 +17,7 @@ def tomorrow_forecast(cities):
 
     forecast = {'max temperature': [], 'min temperature': [], 'average humidity': [],
                 'max wind speed': [], 'wind direction': []}
-
+    valid_cities = []
 
     for city in cities:
         try:
@@ -29,8 +29,9 @@ def tomorrow_forecast(cities):
             mintemp_c = data['day']['mintemp_c']
             avghumidity = data['day']['avghumidity']
             maxwind_kph = data['day']['maxwind_kph']
-            wind_dir = 'Unknown'
 
+            # Forecast for the day doesn't have wind direction, so I opted for finding it in the hourly forecast
+            wind_dir = 'Unknown'
             for hour in range(0, 24):
                 if data['hour'][hour]['wind_kph'] == maxwind_kph:
                     wind_dir = data['hour'][hour]['wind_dir']
@@ -43,16 +44,16 @@ def tomorrow_forecast(cities):
             forecast['average humidity'].append(avghumidity)
             forecast['max wind speed'].append(maxwind_kph)
             forecast['wind direction'].append(wind_dir)
+            valid_cities.append(city)
 
         except KeyError:
-            cities.remove(city)
             print(f'Unable to load forecast for {city}. City does not exist')
         except requests.exceptions.RequestException:
             print('Encountered problem with request')
             raise
 
 
-    df = pd.DataFrame(data=forecast, index=cities)
+    df = pd.DataFrame(data=forecast, index=valid_cities)
     return df
 
 
