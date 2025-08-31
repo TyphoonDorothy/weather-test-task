@@ -9,8 +9,15 @@ api_key = config['api_key']
 pd.set_option("display.max_columns", None)
 
 def tomorrow_forecast(cities):
+    '''
+    Accepts list of cities, returns tomorrow forecast
+    :param cities: List
+    :return: df
+    '''
+
     forecast = {'max temperature': [], 'min temperature': [], 'average humidity': [],
                 'max wind speed': [], 'wind direction': []}
+
 
     for city in cities:
         try:
@@ -37,12 +44,16 @@ def tomorrow_forecast(cities):
             forecast['max wind speed'].append(maxwind_kph)
             forecast['wind direction'].append(wind_dir)
 
-        except Exception as e:
+        except KeyError:
             cities.remove(city)
-            print(f'Unable to load {city} for reason {e}')
+            print(f'Unable to load forecast for {city}. City does not exist')
+        except requests.exceptions.RequestException:
+            print('Encountered problem with request')
+            raise
+
 
     df = pd.DataFrame(data=forecast, index=cities)
-    print(df )
+    return df
 
 
-tomorrow_forecast(['Kyiv', 'Madrid', 'Chisinau', 'Amsterdam'])
+print(tomorrow_forecast(['Kyiv', 'Madrid', 'Chisinau', 'Amsterdam', 'ddd']))
